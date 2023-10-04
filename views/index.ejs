@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <title>カレンダー</title>
+</head>
+
+<body>
+    <header>
+        <h1>カレンダー</h1>
+    </header>
+    <div class="calenderContainer">
+        <p>
+            <!-- 前の月へのリンク -->
+            <% if (currentMonth> 1) { %>
+                <a href="/calendar/<%= currentYear %>/<%= currentMonth - 1 %>">←</a>
+                <% } %>
+                    <%= currentYear %>年<%= currentMonth %>月
+                            <!-- 次の月へのリンク -->
+                            <% if (currentMonth < 12) { %>
+                                <a href="/calendar/<%= currentYear %>/<%= currentMonth + 1 %>">→</a>
+                                <% } %>
+        </p>
+
+        <!-- カレンダーの表示 -->
+        <table>
+            <tr>
+                <th>日</th>
+                <th>月</th>
+                <th>火</th>
+                <th>水</th>
+                <th>木</th>
+                <th>金</th>
+                <th>土</th>
+            </tr>
+            <tr>
+                <!-- カレンダーの日付を表示 -->
+                <% for (let i=1; i <=daysInMonth; i++) { %>
+                    <td>
+                        <%= i %>
+                    </td>
+                    <% if (i % 7===0) { %>
+            </tr>
+            <tr>
+                <% } %>
+                    <% } %>
+            </tr>
+        </table>
+    </div>
+
+</body>
+
+</html>
