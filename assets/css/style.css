@@ -25,12 +25,13 @@ header {
 
 p {
     margin-top: 5%;
+    text-align: center;
 }
 
 .calenderContainer {
     width: 50%;
     margin: auto;
-    text-align: center;
+    display: flex;
 }
 
 th:first-child {
@@ -43,12 +44,8 @@ th:last-child {
 
 table {
     width: 300px;
-    margin: 0 auto;
+    margin: 5% auto 0 auto;
     border-collapse: collapse;
-}
-
-table {
-    margin-top: 5%;
 }
 
 th,
@@ -66,4 +63,8 @@ td {
     background-color: #fff;
     padding: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+.scheduleContainer {
+    width: 100%;
+    margin-left: 5%;
 }

@@ -13,6 +13,7 @@
         <h1>カレンダー</h1>
     </header>
     <div class="calenderContainer">
+        <div class="calenderBox">
         <p>
             <!-- 前の月へのリンク -->
             <% if (currentMonth> 1) { %>
@@ -37,22 +38,28 @@
                 <th>土</th>
             </tr>
             <tr>
-    <!-- カレンダーの日付を表示 -->
-    <% for (let i=1; i <=daysInMonth; i++) { %>
-    <% const currentDate=new Date(currentYear, currentMonth - 1, i); %>
-        <td>
-            <a href="#" class="schedule-link" data-date="<%= `${currentYear}-${currentMonth}-${i}` %>">
-                <%= i %>
-            </a>
-        </td>
-        <% if (currentDate.getDay()===6) { %>
+                <!-- カレンダーの日付を表示 -->
+                <% for (let i=1; i <=daysInMonth; i++) { %>
+                    <% const currentDate=new Date(currentYear, currentMonth - 1, i); %>
+                        <td>
+                            <a href="#" class="schedule-link" data-date="<%= `${currentYear}-${currentMonth}-${i}` %>">
+                                <%= i %>
+                            </a>
+                        </td>
+                        <% if (currentDate.getDay()===6) { %>
             </tr>
             <tr>
                 <% } %>
                     <% } %>
             </tr>
         </table>
-    </div>
+        </div>
+        <div class="scheduleContainer">
+            <h2>
+                <span id="modal-date-schedule"></span>
+            </h2>
+        </div>
+        </div>
 
     <!-- モーダルウィンドウ -->
     <div id="schedule-modal" style="display: none;">
@@ -86,26 +93,6 @@
                         const schedule = scheduleHtml;
 
                         openModal(scheduleHtml, date);
-
-                        $('#schedule-details').html(scheduleHtml);
-
-                        $('#delete-schedule').on('click', function () {
-                            if (confirm('本当に削除しますか？')) {
-                                const scheduleId = $(this).data('schedule-id');
-
-                                $.ajax({
-                                    url: `/deleteSchedule/${scheduleId}`,
-                                    method: 'POST',
-                                    success: function (response) {
-                                        alert('スケジュールが削除されました。');
-                                        closeModal();
-                                    },
-                                    error: function () {
-                                        alert('スケジュール削除中に、エラーが発生しました。')
-                                    }
-                                })
-                            }
-                        })
                     },
                     error: function () {
                         alert('スケジュールの読み込み中にエラーが発生しました。');
@@ -158,6 +145,11 @@
                     if (dateElement) {
                         dateElement.textContent = date;
                     }
+
+                    const dateContent = document.getElementById('modal-date-schedule');
+                    if (dateContent) {
+                        dateContent.textContent = date;
+                    }
                 }
             }
 
@@ -182,6 +174,6 @@
             });
         });
     </script>
-    </body>
+</body>
 
-    </html>
+</html>
