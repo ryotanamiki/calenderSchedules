@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css">
+    <title>カレンダー - <%= date %> の予定</title>
+</head>
+
+<body>
+    <header>
+        <h1>カレンダー - <%= date %> の予定</h1>
+    </header>
+    <div id="schedule-modal" style="display: none;">
+        <h2>
+            <%= date %> の予定
+        </h2>
+        <form id="schedule-form" action="/addSchedule" method="post">
+            <input type="hidden" name="date" value="<%= date %>">
+            <label for="title">タイトル:</label>
+            <input type="text" id="title" name="title" required><br>
+            <label for="user">記入者:</label>
+            <input type="text" id="user" name="user" required><br>
+            <label for="content">スケジュール内容:</label>
+            <textarea id="content" name="content" rows="4" required></textarea><br>
+            <button type="submit">予定を追加</button>
+        </form>
+    </div>z
+
+</body>
+
+</html>

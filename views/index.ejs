@@ -40,17 +40,118 @@
                 <!-- カレンダーの日付を表示 -->
                 <% for (let i=1; i <=daysInMonth; i++) { %>
                     <td>
-                        <%= i %>
+                        <a href="#" class="schedule-link" data-date="<%= `${currentYear}-${currentMonth}-${i}` %>">
+                            <%= i %>
+                        </a>
                     </td>
                     <% if (i % 7===0) { %>
             </tr>
             <tr>
                 <% } %>
                     <% } %>
+
             </tr>
         </table>
     </div>
 
+    <!-- モーダルウィンドウ -->
+    <div id="schedule-modal" style="display: none;">
+        <h2>
+            <%= date %> の予定
+        </h2>
+        <form id="schedule-form" action="/addSchedule" method="post">
+            <input type="hidden" name="date" value="<%= date %>">
+            <label for="name">タイトル:</label>
+            <input type="text" id="name" name="name" required><br>
+            <label for="user">記入者:</label>
+            <input type="text" id="user" name="user" required><br>
+            <label for="content">スケジュール内容:</label><br>
+            <textarea id="content" name="content" rows="4" required></textarea><br>
+            <button type="submit">予定を追加</button>
+        </form>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.schedule-link').on('click', function (e) {
+                e.preventDefault();
+                const date = $(this).data('date');
+
+                $.ajax({
+                    url: '/getSchedule',
+                    data: { date: date },
+                    method: 'GET',
+                    success: function (scheduleHtml) {
+                        openModal(scheduleHtml, date);
+                    },
+                    error: function () {
+                        alert('スケジュールの読み込み中にエラーが発生しました。');
+                    }
+                });
+            });
+
+            // モーダルを閉じる
+            $('#schedule-modal').on('click', function () {
+                closeModal();
+            });
+
+            // フォームの送信処理
+            $('#schedule-form').on('submit', function (e) {
+                e.preventDefault();
+                const formData = $(this).serialize();
+
+                $.ajax({
+                    url: '/addSchedule',
+                    data: formData,
+                    method: 'POST',
+                    success: function (response) {
+                        alert('スケジュールが追加されました。');
+                        closeModal();
+                    },
+                    error: function () {
+                        alert('スケジュールの追加中にエラーが発生しました。');
+                    }
+                });
+            });
+            $('#schedule-form').on('click', function (e) {
+                e.stopPropagation();
+            });
+
+
+            function openModal(scheduleHtml, date) {
+                const modal = document.getElementById('schedule-modal');
+                if (modal) {
+                    modal.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
+
+                    // モーダル内の要素にスケジュール情報を設定
+                    const modalContent = document.getElementById('modal-content');
+                    if (modalContent) {
+                        modalContent.innerHTML = scheduleHtml;
+                    }
+
+                    const dateElement = document.getElementById('modal-date');
+                    if (dateElement) {
+                        dateElement.textContent = date;
+                    }
+                }
+            }
+
+            function closeModal() {
+                const modal = document.getElementById('schedule-modal');
+                if (modal) {
+                    modal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+
+                    // モーダル内の要素をクリア
+                    const modalContent = document.getElementById('modal-content');
+                    if (modalContent) {
+                        modalContent.innerHTML = '';
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 
 </html>

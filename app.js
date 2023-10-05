@@ -18,8 +18,9 @@ const con = mysql.createConnection({
 
 // cssファイルの取得
 app.use(express.static('assets'));
+app.use(bodyParser.urlencoded({ extended: true }));
 
-// 今月のカレンダーを表示するルート
+// 今月のカレンダーを表示
 app.get('/', (req, res) => {
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear();
@@ -30,10 +31,11 @@ app.get('/', (req, res) => {
         currentYear,
         currentMonth,
         daysInMonth,
+        date: `${currentYear}-${currentMonth}-01`,
     });
 });
 
-// 任意の月のカレンダーを表示するルート
+// 任意の月のカレンダーを表示
 app.get('/calendar/:year/:month', (req, res) => {
     const year = parseInt(req.params.year);
     const month = parseInt(req.params.month);
@@ -43,30 +45,45 @@ app.get('/calendar/:year/:month', (req, res) => {
         currentYear: year,
         currentMonth: month,
         daysInMonth,
+        date: `${year}-${month}-01`,
     });
 });
 
-app.post('/schedule', (req, res) => {
-    const year = req.body.year;
-    const month = req.body.month;
-    const day = req.body.day;
-    const title = req.body.title;
-    const author = req.body.author;
-    const schedule = req.body.schedule;
+// スケジュールを表示
+app.get('/getSchedule', (req, res) => {
+    const date = req.query.date;
+    const sql = 'SELECT * FROM schedules WHERE date = ?';
 
-  // MySQLにデータを格納するクエリを実行
-    const insertQuery = `
-    INSERT INTO schedule (year, month, day, title, author, schedule)
-    VALUES (?, ?, ?, ?, ?, ?)
-    `;
-
-    con.query(insertQuery, [year, month, day, title, author, schedule], (err, results) => {
+    con.query(sql, [date], (err, results) => {
         if (err) {
-        console.error('データベースエラー:', err);
-        res.status(500).send('データベースエラーが発生しました。');
-        } else {
-            res.redirect('/');
+            console.error('予定の取得中にエラーが発生しました:', err);
+            res.status(500).send('予定の取得中にエラーが発生しました。');
+            return;
         }
+        const schedules = results;
+
+        res.render('schedule', {
+            date,
+            schedules,
+        });
+    });
+});
+
+// スケジュールを保存
+app.post('/addSchedule', (req, res) => {
+    const { date, name, user, content } = req.body;
+
+    const sql = 'INSERT INTO schedules (date, name, user, content) VALUES (?, ?, ?, ?)';
+
+    con.query(sql, [date, name, user, content], (err, result) => {
+        if (err) {
+            console.error('予定の追加中にエラーが発生しました:', err);
+            res.status(500).send('予定の追加中にエラーが発生しました。');
+            return;
+        }
+
+        console.log('予定が追加されました。');
+        res.send('スケジュールが追加されました。');
     });
 });
 
