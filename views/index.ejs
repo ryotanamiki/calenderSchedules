@@ -37,19 +37,19 @@
                 <th>土</th>
             </tr>
             <tr>
-                <!-- カレンダーの日付を表示 -->
-                <% for (let i=1; i <=daysInMonth; i++) { %>
-                    <td>
-                        <a href="#" class="schedule-link" data-date="<%= `${currentYear}-${currentMonth}-${i}` %>">
-                            <%= i %>
-                        </a>
-                    </td>
-                    <% if (i % 7===0) { %>
+    <!-- カレンダーの日付を表示 -->
+    <% for (let i=1; i <=daysInMonth; i++) { %>
+    <% const currentDate=new Date(currentYear, currentMonth - 1, i); %>
+        <td>
+            <a href="#" class="schedule-link" data-date="<%= `${currentYear}-${currentMonth}-${i}` %>">
+                <%= i %>
+            </a>
+        </td>
+        <% if (currentDate.getDay()===6) { %>
             </tr>
             <tr>
                 <% } %>
                     <% } %>
-
             </tr>
         </table>
     </div>
@@ -57,7 +57,7 @@
     <!-- モーダルウィンドウ -->
     <div id="schedule-modal" style="display: none;">
         <h2>
-            <%= date %> の予定
+            <span id="modal-date"></span> の予定
         </h2>
         <form id="schedule-form" action="/addSchedule" method="post">
             <input type="hidden" name="date" value="<%= date %>">
@@ -77,12 +77,35 @@
                 e.preventDefault();
                 const date = $(this).data('date');
 
+                // クリックされた日付に基づいてschedule.ejsを取得し、モーダルに表示する
                 $.ajax({
                     url: '/getSchedule',
                     data: { date: date },
                     method: 'GET',
                     success: function (scheduleHtml) {
+                        const schedule = scheduleHtml;
+
                         openModal(scheduleHtml, date);
+
+                        $('#schedule-details').html(scheduleHtml);
+
+                        $('#delete-schedule').on('click', function () {
+                            if (confirm('本当に削除しますか？')) {
+                                const scheduleId = $(this).data('schedule-id');
+
+                                $.ajax({
+                                    url: `/deleteSchedule/${scheduleId}`,
+                                    method: 'POST',
+                                    success: function (response) {
+                                        alert('スケジュールが削除されました。');
+                                        closeModal();
+                                    },
+                                    error: function () {
+                                        alert('スケジュール削除中に、エラーが発生しました。')
+                                    }
+                                })
+                            }
+                        })
                     },
                     error: function () {
                         alert('スケジュールの読み込み中にエラーが発生しました。');
@@ -90,7 +113,7 @@
                 });
             });
 
-            // モーダルを閉じる
+            // モーダルを閉じるためのイベントハンドラ
             $('#schedule-modal').on('click', function () {
                 closeModal();
             });
@@ -100,6 +123,7 @@
                 e.preventDefault();
                 const formData = $(this).serialize();
 
+                // スケジュールを追加するAPIにフォームデータを送信
                 $.ajax({
                     url: '/addSchedule',
                     data: formData,
@@ -113,6 +137,7 @@
                     }
                 });
             });
+            // モーダル内のフォームクリック時にイベント伝播を防ぐ
             $('#schedule-form').on('click', function (e) {
                 e.stopPropagation();
             });
@@ -124,7 +149,6 @@
                     modal.style.display = 'block';
                     document.body.style.overflow = 'hidden';
 
-                    // モーダル内の要素にスケジュール情報を設定
                     const modalContent = document.getElementById('modal-content');
                     if (modalContent) {
                         modalContent.innerHTML = scheduleHtml;
@@ -143,15 +167,21 @@
                     modal.style.display = 'none';
                     document.body.style.overflow = 'auto';
 
-                    // モーダル内の要素をクリア
                     const modalContent = document.getElementById('modal-content');
                     if (modalContent) {
                         modalContent.innerHTML = '';
                     }
                 }
             }
+
+            // モーダル内の背景をクリックしてもモーダルを閉じる
+            $('#schedule-modal').on('click', function (e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
         });
     </script>
-</body>
+    </body>
 
-</html>
+    </html>
