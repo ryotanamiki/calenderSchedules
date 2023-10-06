@@ -69,6 +69,28 @@ app.get('/getSchedule', (req, res) => {
     });
 });
 
+//スケジュールを予定表に表示
+app.get('/getSchedules', (req, res) => {
+    const date = req.query.date;
+    const sql = 'SELECT * FROM schedules WHERE date = ?';
+
+    con.query(sql, [date], (err, results) => {
+        if (err) {
+            res.status(500).send('予定の取得中にエラーが発生しました。');
+            return;
+        }
+        const daySchedules = results;
+
+        let scheduleHtml = '<ul>';
+        daySchedules.forEach(schedule => {
+            scheduleHtml += `<li>${schedule.name}：${schedule.content}</li>`;
+        });
+        scheduleHtml += '</ul>';
+
+        res.send(scheduleHtml);
+    });
+});
+
 // スケジュールを保存
 app.post('/addSchedule', (req, res) => {
     const { date, name, user, content } = req.body;

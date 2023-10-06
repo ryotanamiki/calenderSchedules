@@ -99,11 +99,19 @@
                         alert('スケジュールの読み込み中にエラーが発生しました。');
                     }
                 });
-            });
 
-            // モーダルを閉じるためのイベントハンドラ
-            $('#schedule-modal').on('click', function () {
-                closeModal();
+                $.ajax({
+                    url: '/getSchedules',
+                    data: { date: date },
+                    method: 'GET',
+                    success: function (scheduleHtml) {
+                        $('#schedule-list').html(scheduleHtml);
+                        openModal(scheduleHtml, date);
+                    },
+                    error: function () {
+                        alert('スケジュールの読み込み中にエラーが発生しました。');
+                    }
+                })
             });
 
             // フォームの送信処理

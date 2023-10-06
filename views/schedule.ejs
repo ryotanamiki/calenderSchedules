@@ -14,20 +14,19 @@
     </header>
     <div id="schedule-modal" style="display: none;">
         <h2>
-            <%= date %> の予定
+            <span id="modal-date"></span> の予定
         </h2>
         <form id="schedule-form" action="/addSchedule" method="post">
             <input type="hidden" name="date" value="<%= date %>">
-            <label for="title">タイトル:</label>
-            <input type="text" id="title" name="title" required><br>
+            <label for="name">タイトル:</label>
+            <input type="text" id="name" name="name" required><br>
             <label for="user">記入者:</label>
             <input type="text" id="user" name="user" required><br>
-            <label for="content">スケジュール内容:</label>
+            <label for="content">スケジュール内容:</label><br>
             <textarea id="content" name="content" rows="4" required></textarea><br>
             <button type="submit">予定を追加</button>
         </form>
-    </div>z
-
+    </div>
 </body>
 
 </html>
