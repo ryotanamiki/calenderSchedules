@@ -150,6 +150,11 @@
                     if (dateElement) {
                         dateElement.textContent = date;
                     }
+                }
+                const modals = document.querySelector('.scheduleContainer');
+                if (modals) {
+                    modals.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
 
                     const dateContent = document.getElementById('modal-date-schedule');
                     if (dateContent) {
@@ -170,9 +175,15 @@
                     }
 
                 }
-                const dateContent = document.getElementById('modal-date-schedule');
-                if (dateContent) {
-                    dateContent.textContent = ''; // テキストを空に設定する
+                const modals = document.querySelector('.scheduleContainer');
+                if (modals) {
+                    modals.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+
+                    const dateContent = document.getElementById('modal-date-schedule');
+                    if (dateContent) {
+                        dateContent.textContent = '';
+                    }
                 }
             }
 

@@ -73,11 +73,9 @@ app.get('/getSchedule', (req, res) => {
 app.post('/addSchedule', (req, res) => {
     const { date, name, user, content } = req.body;
 
-    const formattedDate = new Date(date).toISOString().split('T')[0];
-
     const sql = 'INSERT INTO schedules (date, name, user, content) VALUES (?, ?, ?, ?)';
 
-    con.query(sql, [formattedDate, name, user, content], (err, result) => {
+    con.query(sql, [date, name, user, content], (err, result) => {
         if (err) {
             console.error('予定の追加中にエラーが発生しました:', err);
             res.status(500).send('予定の追加中にエラーが発生しました。');
