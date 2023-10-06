@@ -58,6 +58,7 @@
             <h2>
                 <span id="modal-date-schedule"></span>
             </h2>
+            <ul id="schedule-list"></ul>
         </div>
         </div>
 
@@ -116,6 +117,10 @@
                     data: formData,
                     method: 'POST',
                     success: function (response) {
+
+                        $('.scheduleContainer').html(`<p>${response.content}</p>`);
+
+
                         alert('スケジュールが追加されました。');
                         closeModal();
                     },
@@ -163,6 +168,11 @@
                     if (modalContent) {
                         modalContent.innerHTML = '';
                     }
+
+                }
+                const dateContent = document.getElementById('modal-date-schedule');
+                if (dateContent) {
+                    dateContent.textContent = ''; // テキストを空に設定する
                 }
             }
 
