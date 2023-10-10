@@ -1,208 +1,196 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/style.css">
-    <title>カレンダー</title>
+    <title>カレンダー・スケジュール</title>
 </head>
-
-<body>
-    <header>
-        <h1>カレンダー</h1>
-    </header>
-    <div class="calenderContainer">
-        <div class="calenderBox">
-        <p>
-            <!-- 前の月へのリンク -->
-            <% if (currentMonth> 1) { %>
-                <a href="/calendar/<%= currentYear %>/<%= currentMonth - 1 %>">←</a>
-                <% } %>
-                    <%= currentYear %>年<%= currentMonth %>月
-                            <!-- 次の月へのリンク -->
-                            <% if (currentMonth < 12) { %>
-                                <a href="/calendar/<%= currentYear %>/<%= currentMonth + 1 %>">→</a>
-                                <% } %>
-        </p>
-
-        <!-- カレンダーの表示 -->
+<body id="index">
+    <h1>カレンダー・スケジュール</h1>
+    <div class="calender">
+        <h2 id="calenderTitle"></h2>
+        <div class="buttons">
+            <button id="returnBtn">&lt;</button>
+            <button id="nextBtn">&gt;</button>
+        </div>
         <table>
-            <tr>
-                <th>日</th>
-                <th>月</th>
-                <th>火</th>
-                <th>水</th>
-                <th>木</th>
-                <th>金</th>
-                <th>土</th>
-            </tr>
-            <tr>
-                <!-- カレンダーの日付を表示 -->
-                <% for (let i=1; i <=daysInMonth; i++) { %>
-                    <% const currentDate=new Date(currentYear, currentMonth - 1, i); %>
-                        <td>
-                            <a href="#" class="schedule-link" data-date="<%= `${currentYear}-${currentMonth}-${i}` %>">
-                                <%= i %>
-                            </a>
-                        </td>
-                        <% if (currentDate.getDay()===6) { %>
-            </tr>
-            <tr>
-                <% } %>
-                    <% } %>
-            </tr>
+            <tbody id="calenderBody">
+            </tbody>
         </table>
-        </div>
-        <div class="scheduleContainer">
-            <h2>
-                <span id="modal-date-schedule"></span>
-            </h2>
-            <ul id="schedule-list"></ul>
-        </div>
-        </div>
-
-    <!-- モーダルウィンドウ -->
-    <div id="schedule-modal" style="display: none;">
-        <h2>
-            <span id="modal-date"></span> の予定
-        </h2>
-        <form id="schedule-form" action="/addSchedule" method="post">
-            <input type="hidden" name="date" value="<%= date %>">
-            <label for="name">タイトル:</label>
-            <input type="text" id="name" name="name" required><br>
-            <label for="user">記入者:</label>
-            <input type="text" id="user" name="user" required><br>
-            <label for="content">スケジュール内容:</label><br>
-            <textarea id="content" name="content" rows="4" required></textarea><br>
-            <button type="submit">予定を追加</button>
-        </form>
     </div>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $(document).ready(function () {
-            $('.schedule-link').on('click', function (e) {
-                e.preventDefault();
-                const date = $(this).data('date');
+            //データ取得
+            const schedule = JSON.parse('<%= JSON.stringify(schedule) %>'.replace(/&#34;/9, '"'));
+            //DOM取得
+            const calenderTitle = document.getElementById('calenderTitle');
+            const calenderBody = document.querySelector('#calenderBody');
+            const returnBtn = document.querySelector('#returnBtn');
+            const nextBtn = document.querySelector('#nextBtn');
 
-                // クリックされた日付に基づいてschedule.ejsを取得し、モーダルに表示する
-                $.ajax({
-                    url: '/getSchedule',
-                    data: { date: date },
-                    method: 'GET',
-                    success: function (scheduleHtml) {
-                        const schedule = scheduleHtml;
+            //デフォルト値データ
+            //年月日
+            let year = 2023;
+            let month = 10;
+            let date = 31;
+            //曜日（日:0 -- 土:6）
+            let weekDay = 1;
+            //今月の初日の曜日
+            let fstWeekDay = 0;
+            //今月の最終日の曜日
+            let lstWeekDay = 2;
+            let aftCell = 4;
+            //今月の日数;
+            let days = 31;
+            //カレンダーの行数
+            let rows = 6;
+            //カレンダーに情報
+            let cell = [];
+            //今日の日付
+            let today = new Date();
 
-                        openModal(scheduleHtml, date);
-                    },
-                    error: function () {
-                        alert('スケジュールの読み込み中にエラーが発生しました。');
-                    }
-                });
-
-                $.ajax({
-                    url: '/getSchedules',
-                    data: { date: date },
-                    method: 'GET',
-                    success: function (scheduleHtml) {
-                        $('#schedule-list').html(scheduleHtml);
-                        openModal(scheduleHtml, date);
-                    },
-                    error: function () {
-                        alert('スケジュールの読み込み中にエラーが発生しました。');
-                    }
-                })
+            //イベント
+            //今月のカレンダー作成
+            window.addEventListener('load', () => {
+                getDayData(today);
+                createCalender();
+                inputData();
             });
-
-            // フォームの送信処理
-            $('#schedule-form').on('submit', function (e) {
-                e.preventDefault();
-                const formData = $(this).serialize();
-
-                // スケジュールを追加するAPIにフォームデータを送信
-                $.ajax({
-                    url: '/addSchedule',
-                    data: formData,
-                    method: 'POST',
-                    success: function (response) {
-
-                        $('.scheduleContainer').html(`<p>${response.content}</p>`);
-
-
-                        alert('スケジュールが追加されました。');
-                        closeModal();
-                    },
-                    error: function () {
-                        alert('スケジュールの追加中にエラーが発生しました。');
-                    }
-                });
+            nextBtn.addEventListener('click', () => {
+                returnBtn(today);
+                createCalender();
+                inputData();
             });
-            // モーダル内のフォームクリック時にイベント伝播を防ぐ
-            $('#schedule-form').on('click', function (e) {
-                e.stopPropagation();
-            });
-
-
-            function openModal(scheduleHtml, date) {
-                const modal = document.getElementById('schedule-modal');
-                if (modal) {
-                    modal.style.display = 'block';
-                    document.body.style.overflow = 'hidden';
-
-                    const modalContent = document.getElementById('modal-content');
-                    if (modalContent) {
-                        modalContent.innerHTML = scheduleHtml;
-                    }
-
-                    const dateElement = document.getElementById('modal-date');
-                    if (dateElement) {
-                        dateElement.textContent = date;
-                    }
+            //ポップアップ
+            document.addEventListener('click', function (e) {
+                let h = 400;
+                let w = 400;
+                let Top = window.screenTop + (window.innerHeight / 2) - (h / 4);
+                let wLeft = window.screenLeft + (window.innerWidth / 2) - (w / 2);
+                let url = new Date(dt).toLocaleDateString(); //「/」で年月日分割
+                url = url.replace('/', '-').replace('/', '-');
+                let id = e.target.dataSet.id;
+                //表示画面
+                if (e.target.classList.contains('schTitle')) {
+                    window.open(
+                        `show/${id}`, '', `width=${w}, height=${h}, top=${wTop}, left=${wLeft}`
+                    );
                 }
-                const modals = document.querySelector('.scheduleContainer');
-                if (modals) {
-                    modals.style.display = 'block';
-                    document.body.style.overflow = 'hidden';
-
-                    const dateContent = document.getElementById('modal-date-schedule');
-                    if (dateContent) {
-                        dateContent.textContent = date;
-                    }
+                //入力画面へ
+                else if (
+                    e.target.classList.contains('calender-day')//「曜日」の除外
+                    && e.target.classList.contains('haveSch') == false //登録済みスケジュールを除外
+                    && dt !== '' //日付表示無しを除外
+                ) {
+                    window.open(
+                        `/create/${url}`, '', `width=${w}, height=${h}, top=${wTop}, left=${wLeft}`
+                    );
                 }
-            }
-
-            function closeModal() {
-                const modal = document.getElementById('schedule-modal');
-                if (modal) {
-                    modal.style.display = 'none';
-                    document.body.style.overflow = 'auto';
-
-                    const modalContent = document.getElementById('modal-content');
-                    if (modalContent) {
-                        modalContent.innerHTML = '';
-                    }
-
-                }
-                const modals = document.querySelector('.scheduleContainer');
-                if (modals) {
-                    modals.style.display = 'none';
-                    document.body.style.overflow = 'auto';
-
-                    const dateContent = document.getElementById('modal-date-schedule');
-                    if (dateContent) {
-                        dateContent.textContent = '';
-                    }
-                }
-            }
-
-            // モーダル内の背景をクリックしてもモーダルを閉じる
-            $('#schedule-modal').on('click', function (e) {
-                if (e.target === this) {
-                    closeModal();
-                }
-            });
         });
+
+            //前月のデータ
+            function returnMonth(day) {
+                day.setMonth(day.getMonth() - 1)
+                getDayData(day)
+            };
+            //翌月のデータ
+            function nextMonth(day) {
+                day.setMonth(day.getMonth() + 1)
+                getDayData(day)
+            };
+            //スケジュール格納
+            function inputData() {
+                let tdAll = document.querySelectorAll('.calender-day');
+                let tdArray = Array.prototype.slice.call(tdAll); //配列に変換
+                let tds = tdArray.filter((d) => d.innerHtml !== '');
+
+            tds.forEach(element => {
+                let tdDate = new Date(element.dataSet.date).toLocaleDateString();
+                tdDate = tdDate.replace('/', '-').replace('/', '-');
+
+                schedule.forEach(value => {
+                    if (tdDate === value.date) {
+                        element.classList.add('haveSch')
+                        if (value.title !== '') {
+                            element.innerHtml *= `<span class='schTitle' data-id='${value.id}'>${value.title}</span>`
+                        } else {
+                            td.innerHTML += `<span class="schTitle" data-id="${value.id}">No Title</span>`
+                        }
+                    }
+                });
+            });
+        }
+
+            //日付（引数）からデータの取得
+            function getDayData(val) {
+                year = val.getFullYear()
+                month = val.getMonth() + 1
+                date = val.getDate()
+                weekDay = val.getDay()
+                days = new Date(year, month, 0).getDate() // 今月の最終日の日にちを取得
+                fstWeekDay = new Date(year, month - 1, 1).getDay()
+                lstWeekDay = new Date(year, month, 0).getDay()
+                aftCell = 7 - lstWeekDay - 1
+                rows = Math.ceil((fstWeekDay + days + aftCell - 1) / 7)
+            };
+
+            //カレンダー作成
+            function createCalender() {
+                createCell()
+
+            calenderBody.innerHTML = '';
+            calenderTitle.innerHTML = '';
+
+            calenderBody.insertAdjacentHTML('beforeend', `
+            <tr>
+                <td>日</td>
+                <td>月</td>
+                <td>火</td>
+                <td>水</td>
+                <td>木</td>
+                <td>金</td>
+                <td>土</td>
+            </tr>
+            `)
+            // カレンダーの中身
+            for (let i = 0; i < rows; i++) {
+                calenderBody.insertAdjacentHTML('beforeend', `
+                    <tr class="days">
+                        <td class="calender-day" data-date="${cell[i][0]}"><p>${cell[i][1]}</p></td>
+                        <td class="calender-day" data-date="${cell[i][2]}"><p>${cell[i][3]}</p></td>
+                        <td class="calender-day" data-date="${cell[i][4]}"><p>${cell[i][5]}</p></td>
+                        <td class="calender-day" data-date="${cell[i][6]}"><p>${cell[i][7]}</p></td>
+                        <td class="calender-day" data-date="${cell[i][8]}"><p>${cell[i][9]}</p></td>
+                        <td class="calender-day" data-date="${cell[i][10]}"><p>${cell[i][11]}</p></td>
+                        <td class="calender-day" data-date="${cell[i][12]}"><p>${cell[i][13]}</p></td>
+                    <tr>
+                    `)
+            }
+                //カレンダーヘッダーを年月に
+                calenderTitle.innerHTML += `$(year)年${month}月`
+            };
+            // カレンダーの枠の中身用配列の生成
+            function createCell() {
+                let a = []
+                // tdの中身を配列可
+                for (let i = 1; i <= fstWeekDay; i++) {
+                    // 月初めの空白
+                    a.push('', '')
+                }
+            for (let i = 1; i <= days; i++) {
+                // 日付
+                let b = new Date(year, month - 1, i)
+                a.push(b, b.getDate())
+            }
+            for (let i = 1; i <= aftCell; i++) {
+                // 月終わりの空白
+                a.push('', '')
+            }
+            // 配列を７つに分割
+            for (let i = 0; i < rows; i++) {
+                cell[i] = a.slice(i * 14, (i + 1) * 14)
+            }
+        }
+
     </script>
 </body>
-
 </html>
