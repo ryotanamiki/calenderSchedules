@@ -25,7 +25,7 @@ app.get("/", (req, res) => {
     con.query(sql, function (err, result, fields) {
     if (err) throw err;
     res.render("index", {
-        schedule: result
+        schedules: result
     });
     });
 });
@@ -49,6 +49,7 @@ app.post("/", (req, res) => {
     ],
     function (err, result, fields) {
         if (err) throw err;
+        res.send("スケジュールを追加しました");
     }
     );
 });
@@ -59,7 +60,7 @@ app.get("/show/:id", (req, res) => {
     con.query(sql, function (err, result, fields) {
     if (err) throw err;
     res.render("show", {
-        schedule: result,
+        schedules: result,
     });
     });
 });
@@ -70,7 +71,7 @@ app.get("/edit/:id", (req, res) => {
     con.query(sql, function (err, result, fields) {
     if (err) throw err;
     res.render("edit", {
-        schedule: result,
+        schedules: result,
     });
     });
 });

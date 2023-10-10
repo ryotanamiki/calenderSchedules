@@ -10,7 +10,6 @@
 
 <body id="index">
     <h1>カレンダースケジュール</h1>
-    <!-- <small>（送信・閉じるボタンを押せば自動更新）<br>（×ボタンで閉じるとリロード必要）</small> -->
     <div id="calender">
         <h2 id="calenderTitle"></h2>
         <div class="buttons">
@@ -24,7 +23,7 @@
     </div>
     <script>
             // データ取得
-            const schedule = JSON.parse('<%= JSON.stringify(schedule) %>'.replace(/&#34;/g, '"'))
+            const schedule = JSON.parse('<%= JSON.stringify(schedules) %>'.replace(/&#34;/g, '"'))
             // DOM取得
             const calenderTitle = document.querySelector('#calenderTitle')
             const calenderBody = document.querySelector('#calenderBody')
