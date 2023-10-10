@@ -23,134 +23,133 @@
         </table>
     </div>
     <script>
-                // データ取得
-                const schedule = JSON.parse('<%= JSON.stringify(schedule) %>'.replace(/&#34;/g, '"'))
-                // DOM取得
-                const calenderTitle = document.querySelector('#calenderTitle')
-                const calenderBody = document.querySelector('#calenderBody')
-                const prevBtn = document.querySelector('#prevBtn')
-                const nextBtn = document.querySelector('#nextBtn')
+            // データ取得
+            const schedule = JSON.parse('<%= JSON.stringify(schedule) %>'.replace(/&#34;/g, '"'))
+            // DOM取得
+            const calenderTitle = document.querySelector('#calenderTitle')
+            const calenderBody = document.querySelector('#calenderBody')
+            const prevBtn = document.querySelector('#prevBtn')
+            const nextBtn = document.querySelector('#nextBtn')
 
-                // デフォルトの値
-                // 年月日
-                let year = 2023
-                let month = 7
-                let date = 31
-                        // 曜日（0:日 --- 6:土)
-                let weekDay = 1
-                        // 今月の初日の曜日
-                let fstWeekDay = 6
-                        // 今月の最終日の曜日
-                let lstWeekDay = 6
-                let aftCell = 2
-                // 今月が何日か
-                let days = 31
-                // カレンダーの行数
-                let rows = 6
-                        // カレンダーの枠
-                let cell = []
-                // 今日の日付
-                let today = new Date()
+            // 必要データ（デフォルトの値）
+            // 年月日
+            let year = 2023
+            let month = 7
+            let date = 31
+            // 曜日（0:日 ーーー 6:土)
+            let weekDay = 1
+            // 今月の初日の曜日
+            let fstWeekDay = 6
+            // 今月の最終日の曜日
+            let lstWeekDay = 6
+            let aftCell = 2
+            // 今月が何日か
+            let days = 31
+            // カレンダーの行数
+            let rows = 6
+            // カレンダーの枠
+            let cell = []
+            // 今日の日付
+            let today = new Date()
 
-                // イベント
-                // 今月のカレンダー生成
+            // イベント
+            // 今月のカレンダー生成
             window.addEventListener('load', () => {
                 getDayData(today)
                 createCalender()
                 inputData()
             })
-                // ボタンクリックで月変更
-                prevBtn.addEventListener('click', () => {
-                    prevMonth(today)
-                    createCalender()
-                    inputData()
-                })
-                nextBtn.addEventListener('click', () => {
-                    nextMonth(today)
-                    createCalender()
-                    inputData()
-                })
+            // ボタンクリックで月変更
+            prevBtn.addEventListener('click', () => {
+                prevMonth(today)
+                createCalender()
+                inputData()
+            })
+            nextBtn.addEventListener('click', () => {
+                nextMonth(today)
+                createCalender()
+                inputData()
+            })
             // ポップアップ
-                document.addEventListener('click', function (e) {
-                    let h = 400
-                    let w = 400
-                    let wTop = window.screenTop + (window.innerHeight / 2) - (h / 4)
-                    let wLeft = window.screenLeft + (window.innerWidth / 2) - (w / 2)
-                    let dt = e.target.dataset.date
-                    let url = new Date(dt).toLocaleDateString()
-                    url = url.replace('/', '-').replace('/', '-')
-                    let id = e.target.dataset.id
-                    // 表示画面へ
-                    if (e.target.classList.contains('schTitle')) {
-                        window.open(
+            document.addEventListener('click', function (e) {
+                let h = 400
+                let w = 400
+                let wTop = window.screenTop + (window.innerHeight / 2) - (h / 4)
+                let wLeft = window.screenLeft + (window.innerWidth / 2) - (w / 2)
+                let dt = e.target.dataset.date
+                let url = new Date(dt).toLocaleDateString()
+                url = url.replace('/', '-').replace('/', '-')
+                let id = e.target.dataset.id
+                // 表示画面へ
+                if (e.target.classList.contains('schTitle')) {
+                    window.open(
                     `/show/${id}`, '', `width=${w}, height=${h}, top=${wTop}, left=${wLeft}`
                 );
             }
             // 入力画面へ
             else if (
                 e.target.classList.contains('calender-day') // 曜日を除外
-                        && e.target.classList.contains('haveSch') == false //登録済みスケジュールの除外
+                && e.target.classList.contains('haveSch') == false // スケジュール登録済みを除外
                 && dt !== '' // 日付表示のないものを除外
             ) {
                 window.open(
                     `/create/${url}`, '', `width=${w}, height=${h}, top=${wTop}, left=${wLeft}`
                 );
             }
-                })
+        })
 
-                // 前の月のデータ取得
-                function prevMonth(day) {
+            // 前の月のデータ取得
+            function prevMonth(day) {
                 day.setMonth(day.getMonth() - 1)
                 getDayData(day)
-                }
-                // 次の月のデータ取得
+            }
+            // 次の月のデータ取得
             function nextMonth(day) {
                 day.setMonth(day.getMonth() + 1)
                 getDayData(day)
-                }
-                // データベースのスケジュール格納
+            }
+            // データベースのスケジュール格納
             function inputData() {
                 let tdAll = document.querySelectorAll('.calender-day')
                 let tdArray = Array.prototype.slice.call(tdAll) //配列に変換
                 let tds = tdArray.filter((elm) => elm.innerHTML !== '') //日付の入ったtdだけ取得
 
-                tds.forEach(td => {
-                    let tdDate = new Date(td.dataset.date).toLocaleDateString()
-                    tdDate = tdDate.replace('/', '-').replace('/', '-')
+            tds.forEach(td => {
+                let tdDate = new Date(td.dataset.date).toLocaleDateString()
+                tdDate = tdDate.replace('/', '-').replace('/', '-')
                 schedule.forEach(value => {
                     if (tdDate === value.date) {
                         td.classList.add('haveSch')
                         if (value.title !== '') {
                             td.innerHTML += `<span class="schTitle" data-id="${value.id}">${value.title}</span>`
                         } else {
-                            td.innerHTML += `<span class="schTitle" data-id="${value.id}">No Title</span>`
+                            td.innerHTML += `<span class="schTitle" data-id="${value.id}">タイトルなし</span>`
                         }
                     }
                 })
             })
         }
 
-                // 日付（引数）から必要データ取得
+            // 日付（引数）からデータ取得
             function getDayData(val) {
                 year = val.getFullYear()
                 month = val.getMonth() + 1
                 date = val.getDate()
                 weekDay = val.getDay()
-                days = new Date(year, month, 0).getDate() // 今月の最終日の日にちを取得
-                fstWeekDay = new Date(year, month - 1, 1).getDay()
-                lstWeekDay = new Date(year, month, 0).getDay()
-                aftCell = 7 - lstWeekDay - 1
-                rows = Math.ceil((fstWeekDay + days + aftCell - 1) / 7)
-            }
+            days = new Date(year, month, 0).getDate()
+            fstWeekDay = new Date(year, month - 1, 1).getDay()
+            lstWeekDay = new Date(year, month, 0).getDay()
+            aftCell = 7 - lstWeekDay - 1
+            rows = Math.ceil((fstWeekDay + days + aftCell - 1) / 7)
+        }
 
-                // カレンダー生成
+            // カレンダー生成
             function createCalender() {
-                // 中身用配列の生成
-                createCell()
-                // 初期化
-                calenderBody.innerHTML = ''
-                calenderTitle.innerHTML = ''
-                // カレンダー上部の日付
+            createCell()
+
+            calenderBody.innerHTML = ''
+            calenderTitle.innerHTML = ''
+
             calenderBody.insertAdjacentHTML('beforeend', `
                 <tr>
                     <td>日</td>
@@ -177,17 +176,17 @@
                     `)
 
             }
-                            // 上部に年月表示
-                            calenderTitle.innerHTML += `${year}年${month}月`
-                        }
-                        // カレンダーの枠の中身用配列の生成
-                        function createCell() {
-                            let a = []
-                            // tdの中身を配列可
-                            for (let i = 1; i <= fstWeekDay; i++) {
-                                // 月初めの空白
-                                a.push('', '')
-                            }
+                    // 上部に年月表示
+                    calenderTitle.innerHTML += `${year}年${month}月`
+                }
+                // カレンダーの枠の中身用配列の生成
+                function createCell() {
+                    let a = []
+                    // tdの中身を配列可
+                    for (let i = 1; i <= fstWeekDay; i++) {
+                        // 月初めの空白
+                        a.push('', '')
+                    }
             for (let i = 1; i <= days; i++) {
                 // 日付
                 let b = new Date(year, month - 1, i)
@@ -201,7 +200,7 @@
             for (let i = 0; i < rows; i++) {
                 cell[i] = a.slice(i * 14, (i + 1) * 14)
             }
-                }
+        }
     </script>
 </body>
 
