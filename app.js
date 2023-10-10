@@ -13,7 +13,7 @@ const con = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'rootroot',
-    database: 'calenderSchedule'
+    database: 'calender'
 });
 
 // cssファイルの取得

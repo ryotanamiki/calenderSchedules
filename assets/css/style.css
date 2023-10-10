@@ -15,7 +15,7 @@ h1 {
 }
 
 h2 {
-    color: #a44;
+    color: #a59f49;
 }
 
 p {
@@ -62,18 +62,19 @@ td {
     width: calc(100% / 7);
         height: 2rem;
         text-align: center;
-        background-color: #ddc;
+        background-color: #edc549;
+            color: #fff;
     }
     
     td:first-child {
-        color: red;
+        color: #e64751;
     }
     
     .days td {
         height: calc(100% / 7);
         text-align-last: left;
         vertical-align: top;
-        background-color: #eed;
+        background-color: #ccb485;
     }
     
     .schTitle {
