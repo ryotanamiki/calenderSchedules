@@ -9,3 +9,6 @@ CREATE TABLE calenderSchedule(
 ) COMMENT '';
 
 ALTER TABLE calenderSchedule RENAME TO schedules
+
+ALTER TABLE schedules
+RENAME COLUMN name TO title

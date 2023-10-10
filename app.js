@@ -37,14 +37,14 @@ app.get("/create/:date", (req, res) => {
 
 app.post("/", (req, res) => {
     console.log(req.params.id);
-    const sql = "INSERT INTO schedules (id, date, title, username, content) VALUES (?, ?, ?, ?, ?)"
+    const sql = "INSERT INTO schedules (id, date, title, user, content) VALUES (?, ?, ?, ?, ?)"
     con.query(
     sql,
     [
     req.body.id,
     req.body.date,
     req.body.title,
-    req.body.username,
+    req.body.user,
     req.body.content
     ],
     function (err, result, fields) {

@@ -10,7 +10,7 @@
 
 <body id="index">
     <h1>カレンダースケジュール</h1>
-    <small>（送信・閉じるボタンを押せば自動更新）<br>（×ボタンで閉じるとリロード必要）</small>
+    <!-- <small>（送信・閉じるボタンを押せば自動更新）<br>（×ボタンで閉じるとリロード必要）</small> -->
     <div id="calender">
         <h2 id="calenderTitle"></h2>
         <div class="buttons">
@@ -71,14 +71,14 @@
                     createCalender()
                     inputData()
                 })
-                // 日付クリックで作成画面ポップアップ
+                            // ポップアップ
                 document.addEventListener('click', function (e) {
                     let h = 400
                     let w = 400
                     let wTop = window.screenTop + (window.innerHeight / 2) - (h / 4)
                     let wLeft = window.screenLeft + (window.innerWidth / 2) - (w / 2)
                     let dt = e.target.dataset.date
-                    let url = new Date(dt).toLocaleDateString() //2023/9/7のような値
+                    let url = new Date(dt).toLocaleDateString()
                     url = url.replace('/', '-').replace('/', '-')
                     let id = e.target.dataset.id
                     // 表示画面へ
@@ -90,7 +90,7 @@
             // 入力画面へ
             else if (
                 e.target.classList.contains('calender-day') // 曜日を除外
-                && e.target.classList.contains('haveSch') == false // スケジュール登録済みを除外
+                        && e.target.classList.contains('haveSch') == false //登録済みスケジュールの除外
                 && dt !== '' // 日付表示のないものを除外
             ) {
                 window.open(
@@ -116,8 +116,8 @@
                 let tds = tdArray.filter((elm) => elm.innerHTML !== '') //日付の入ったtdだけ取得
 
                 tds.forEach(td => {
-                    let tdDate = new Date(td.dataset.date).toLocaleDateString() //2023/9/7のような値に変換
-                    tdDate = tdDate.replace('/', '-').replace('/', '-') //2023-9-7のような値に変換
+                    let tdDate = new Date(td.dataset.date).toLocaleDateString()
+                    tdDate = tdDate.replace('/', '-').replace('/', '-')
                 schedule.forEach(value => {
                     if (tdDate === value.date) {
                         td.classList.add('haveSch')
