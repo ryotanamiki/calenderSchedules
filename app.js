@@ -20,95 +20,79 @@ const con = mysql.createConnection({
 app.use(express.static('assets'));
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// 今月のカレンダーを表示
-app.get('/', (req, res) => {
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth() + 1;
-    const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
-
-    res.render('index', {
-        currentYear,
-        currentMonth,
-        daysInMonth,
-        date: `${currentYear}-${currentMonth}-01`,
+app.get("/", (req, res) => {
+  const sql = "SELECT * from schedules;";
+    con.query(sql, function (err, result, fields) {
+    if (err) throw err;
+    res.render("index", {
+        schedule: result
+    });
     });
 });
 
-// 任意の月のカレンダーを表示
-app.get('/calendar/:year/:month', (req, res) => {
-    const year = parseInt(req.params.year);
-    const month = parseInt(req.params.month);
-    const daysInMonth = new Date(year, month, 0).getDate();
+// スケジュールの追加
+app.get("/create/:date", (req, res) => {
+    res.sendFile(path.join(__dirname, "html/form.html"));
+});
 
-    res.render('index', {
-        currentYear: year,
-        currentMonth: month,
-        daysInMonth,
-        date: `${year}-${month}-01`,
+app.post("/", (req, res) => {
+    console.log(req.params.id);
+    const sql = "INSERT INTO schedules (id, date, title, username, content) VALUES (?, ?, ?, ?, ?)"
+    con.query(
+    sql,
+    [
+    req.body.id,
+    req.body.date,
+    req.body.title,
+    req.body.username,
+    req.body.content
+    ],
+    function (err, result, fields) {
+        if (err) throw err;
+    }
+    );
+});
+
+// スケジュールの表示
+app.get("/show/:id", (req, res) => {
+  const sql = `SELECT * FROM schedules WHERE id = ${req.params.id}`;
+    con.query(sql, function (err, result, fields) {
+    if (err) throw err;
+    res.render("show", {
+        schedule: result,
+    });
     });
 });
 
-// スケジュールを表示
-app.get('/getSchedule', (req, res) => {
-    const date = req.query.date;
-    const sql = 'SELECT * FROM schedules WHERE date = ?';
-
-    con.query(sql, [date], (err, results) => {
-        if (err) {
-            console.error('予定の取得中にエラーが発生しました:', err);
-            res.status(500).send('予定の取得中にエラーが発生しました。');
-            return;
-        }
-        const schedules = results;
-
-        res.render('schedule', {
-            date,
-            schedules,
-        });
+// スケジュール編集
+app.get("/edit/:id", (req, res) => {
+  const sql = `SELECT * FROM schedules WHERE id = ${req.params.id}`;
+    con.query(sql, function (err, result, fields) {
+    if (err) throw err;
+    res.render("edit", {
+        schedule: result,
+    });
     });
 });
 
-//スケジュールを予定表に表示
-app.get('/getSchedules', (req, res) => {
-    const date = req.query.date;
-    const sql = 'SELECT * FROM schedules WHERE date = ?';
-
-    con.query(sql, [date], (err, results) => {
-        if (err) {
-            res.status(500).send('予定の取得中にエラーが発生しました。');
-            return;
-        }
-        const daySchedules = results;
-
-        let scheduleHtml = '<ul>';
-        daySchedules.forEach(schedule => {
-            scheduleHtml += `<li>${schedule.name}：${schedule.content}</li>`;
-        });
-        scheduleHtml += '</ul>';
-
-        res.send(scheduleHtml);
+app.post("/update/:id", (req, res) => {
+    console.log(req.params.id);
+    const sql = "UPDATE schedules SET ? WHERE id = " + req.params.id;
+    con.query(sql, req.body, function (err, result, fields) {
+    if (err) throw err;
+    console.log(result);
     });
 });
 
-// スケジュールを保存
-app.post('/addSchedule', (req, res) => {
-    const { date, name, user, content } = req.body;
-
-    const sql = 'INSERT INTO schedules (date, name, user, content) VALUES (?, ?, ?, ?)';
-
-    con.query(sql, [date, name, user, content], (err, result) => {
-        if (err) {
-            console.error('予定の追加中にエラーが発生しました:', err);
-            res.status(500).send('予定の追加中にエラーが発生しました。');
-            return;
-        }
-
-        console.log('予定が追加されました。');
-        res.send('スケジュールが追加されました。');
+// スケジュール削除
+app.get("/delete/:id", (req, res) => {
+    const sql = "DELETE FROM schedules WHERE id = ?";
+    con.query(sql, [req.params.id], function (err, result, fields) {
+    if (err) throw err;
+    console.log(result);
+    res.send("スケジュールを削除しました");
     });
 });
 
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-});
+
+app.listen(port, () => console.log(`Example app listening on port ${port}!`));

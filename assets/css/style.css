@@ -1,70 +1,123 @@
-body,
-h1,
-h2,
-h3,
-p,
-ul,
-li {
-    margin: 0;
-    padding: 0;
-}
+@charset "utf-8";
 
 body {
-    width: 100%;
-    font-family: Arial, sans-serif;
-    margin: 0;
+    margin: 1rem auto 0;
+}
+h1,
+h2 {
+    text-align: center;
     padding: 0;
+    margin: 0;
 }
 
-header {
-    background-color: #333;
-    color: white;
-    text-align: center;
-    padding: 10px 0;
+h1 {
+    color: #555;
+}
+
+h2 {
+    color: #a44;
 }
 
 p {
-    margin-top: 5%;
+    margin: 0;
+    }
+    
+    small {
+        display: block;
     text-align: center;
 }
 
-.calenderContainer {
-    width: 50%;
-    margin: auto;
+/*-------------------------
+index.ejs
+-------------------------*/
+#index body {
+    max-width: 700px;
+    min-width: 500px;
+}
+
+.buttons {
     display: flex;
+    justify-content: space-between;
 }
 
-th:first-child {
-    color: red;
+.buttons button {
+    margin: 0.3rem;
+    margin-top: -1.5rem;
 }
 
-th:last-child {
-    color: blue;
+#calender {
+    margin-top: 1rem;
+    padding: 1rem;
 }
 
 table {
-    width: 300px;
-    margin: 5% auto 0 auto;
-    border-collapse: collapse;
+    width: 100%;
+        height: 450px;
 }
 
-th,
+tr:nth-child(2n-1):not(:first-child) {
+    display: none;
+}
 td {
-    padding: 5px;
+    width: calc(100% / 7);
+        height: 2rem;
+        text-align: center;
+        background-color: #ddc;
+    }
+    
+    td:first-child {
+        color: red;
+    }
+    
+    .days td {
+        height: calc(100% / 7);
+        text-align-last: left;
+        vertical-align: top;
+        background-color: #eed;
+    }
+    
+    .schTitle {
+        cursor: pointer;
+        color: #0ab;
+        font-size: 0.9rem;
+        font-weight: bold;
+    }
+    
+    /*-------------------------
+                    show.ejs
+                    -------------------------*/
+    #showPage h1 {
+        color: #0ab;
+    }
+    
+    .container {
+        padding: 1rem 2rem;
+    }
+    
+    #sDate {
+        font-weight: bold;
+    }
+    
+    .links {
     text-align: center;
 }
-#schedule-modal {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1000;
-    background-color: #fff;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+#showPage button,
+#edit button {
+    display: block;
+    margin: auto;
 }
-.scheduleContainer {
-    width: 100%;
-    margin-left: 5%;
+/*-------------------------
+form.html
+-------------------------*/
+form {
+    padding: 1rem 2rem;
+}
+
+input {
+    margin-bottom: 0.5rem;
+}
+
+#form .btn {
+    display: block;
+    margin: auto;
 }
