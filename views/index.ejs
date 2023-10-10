@@ -31,24 +31,23 @@
                 const prevBtn = document.querySelector('#prevBtn')
                 const nextBtn = document.querySelector('#nextBtn')
 
-                // 必要データ（デフォルトの値）
+                // デフォルトの値
                 // 年月日
                 let year = 2023
                 let month = 7
                 let date = 31
-                // 曜日（0:日 1:月 2:火 3:水 4:木 5:金 6:土)
+                        // 曜日（0:日 --- 6:土)
                 let weekDay = 1
-                // 今月の初日の曜日(=前の空白の数)
+                        // 今月の初日の曜日
                 let fstWeekDay = 6
-                // 今月の最終日の曜日(後の空白の数 = 7 - lstWeekDay + 1)
+                        // 今月の最終日の曜日
                 let lstWeekDay = 6
                 let aftCell = 2
                 // 今月が何日か
                 let days = 31
                 // カレンダーの行数
                 let rows = 6
-                // カレンダーの枠
-                // （7 * 2 * rowsの多次元配列 偶数個目にdate情報）
+                        // カレンダーの枠
                 let cell = []
                 // 今日の日付
                 let today = new Date()
@@ -71,7 +70,7 @@
                     createCalender()
                     inputData()
                 })
-                            // ポップアップ
+            // ポップアップ
                 document.addEventListener('click', function (e) {
                     let h = 400
                     let w = 400
@@ -124,7 +123,7 @@
                         if (value.title !== '') {
                             td.innerHTML += `<span class="schTitle" data-id="${value.id}">${value.title}</span>`
                         } else {
-                            td.innerHTML += `<span class="schTitle" data-id="${value.id}">タイトルなし</span>`
+                            td.innerHTML += `<span class="schTitle" data-id="${value.id}">No Title</span>`
                         }
                     }
                 })
