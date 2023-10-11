@@ -10,6 +10,7 @@
 
 <body id="index">
     <h1>カレンダースケジュール</h1>
+    <!-- <small>（送信・閉じるボタンを押せば自動更新）<br>（×ボタンで閉じるとリロード必要）</small> -->
     <div id="calender">
         <h2 id="calenderTitle"></h2>
         <div class="buttons">
@@ -23,7 +24,8 @@
     </div>
     <script>
             // データ取得
-            const schedule = JSON.parse('<%= JSON.stringify(schedules) %>'.replace(/&#34;/g, '"'))
+            const schedule = JSON.parse('<%= JSON.stringify(schedule) %>'.replace(/&#34;/g, '"'))
+            console.log(schedule)
             // DOM取得
             const calenderTitle = document.querySelector('#calenderTitle')
             const calenderBody = document.querySelector('#calenderBody')
@@ -35,30 +37,31 @@
             let year = 2023
             let month = 7
             let date = 31
-            // 曜日（0:日 ーーー 6:土)
+        // 曜日（0:日 1:月 2:火 3:水 4:木 5:金 6:土)
             let weekDay = 1
-            // 今月の初日の曜日
+        // 今月の初日の曜日(=前の空白の数)
             let fstWeekDay = 6
-            // 今月の最終日の曜日
+        // 今月の最終日の曜日(後の空白の数 = 7 - lstWeekDay + 1)
             let lstWeekDay = 6
             let aftCell = 2
-            // 今月が何日か
+        // 今月が何日か
             let days = 31
-            // カレンダーの行数
+        // カレンダーの行数
             let rows = 6
-            // カレンダーの枠
+        // カレンダーの枠
+        // （7 * 2 * rowsの多次元配列 偶数個目にdate情報）
             let cell = []
-            // 今日の日付
+        // 今日の日付
             let today = new Date()
 
-            // イベント
-            // 今月のカレンダー生成
+        // イベント
+        // 今月のカレンダー生成
             window.addEventListener('load', () => {
                 getDayData(today)
                 createCalender()
                 inputData()
             })
-            // ボタンクリックで月変更
+        // ボタンクリックで月変更
             prevBtn.addEventListener('click', () => {
                 prevMonth(today)
                 createCalender()
@@ -69,20 +72,20 @@
                 createCalender()
                 inputData()
             })
-            // ポップアップ
+        // 日付クリックで作成画面ポップアップ
             document.addEventListener('click', function (e) {
                 let h = 400
                 let w = 400
                 let wTop = window.screenTop + (window.innerHeight / 2) - (h / 4)
                 let wLeft = window.screenLeft + (window.innerWidth / 2) - (w / 2)
                 let dt = e.target.dataset.date
-                let url = new Date(dt).toLocaleDateString()
-                url = url.replace('/', '-').replace('/', '-')
+                let url = new Date(dt).toLocaleDateString() //2023/10/7のような値
+                // url = url.replace('/', '-').replace('/', '-')
                 let id = e.target.dataset.id
                 // 表示画面へ
                 if (e.target.classList.contains('schTitle')) {
                     window.open(
-                        `show/${id}`, '', `width=${w}, height=${h}, top=${wTop}, left=${wLeft}`
+                        `/show/${id}`, '', `width=${w}, height=${h}, top=${wTop}, left=${wLeft}`
                 );
             }
             // 入力画面へ
@@ -114,8 +117,8 @@
                 let tds = tdArray.filter((elm) => elm.innerHTML !== '') //日付の入ったtdだけ取得
 
             tds.forEach(td => {
-                let tdDate = new Date(td.dataset.date).toLocaleDateString()
-                tdDate = tdDate.replace('/', '-').replace('/', '-')
+                let tdDate = new Date(td.dataset.date).toLocaleDateString() //2023/10/7のような値に変換
+                // tdDate = tdDate.replace('/', '-').replace('/', '-') //2023-10-7のような値に変換
                 schedule.forEach(value => {
                     if (tdDate === value.date) {
                         td.classList.add('haveSch')
@@ -129,13 +132,13 @@
             })
         }
 
-            // 日付（引数）からデータ取得
+    // 日付（引数）から必要データ取得
             function getDayData(val) {
                 year = val.getFullYear()
                 month = val.getMonth() + 1
                 date = val.getDate()
                 weekDay = val.getDay()
-            days = new Date(year, month, 0).getDate()
+                days = new Date(year, month, 0).getDate() // 今月の最終日の日にちを取得
             fstWeekDay = new Date(year, month - 1, 1).getDay()
             lstWeekDay = new Date(year, month, 0).getDay()
             aftCell = 7 - lstWeekDay - 1
@@ -144,11 +147,12 @@
 
             // カレンダー生成
             function createCalender() {
+                // 中身用配列の生成
             createCell()
-
+                // 初期化
             calenderBody.innerHTML = ''
             calenderTitle.innerHTML = ''
-
+                // カレンダー上部の日付
             calenderBody.insertAdjacentHTML('beforeend', `
                 <tr>
                     <td>日</td>
