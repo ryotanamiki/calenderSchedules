@@ -15,7 +15,7 @@
         <h1>
             <%= schedule[0].title %>
         </h1>
-        <p id="sDate">
+        <p id="sDates">
             <%= schedule[0].date %>
         </p>
         <p><span>記入者：</span>
@@ -31,9 +31,15 @@
     </div>
     <button class="btn">閉じる</button>
     <script>
-        let sDate = document.querySelector('#sDate')
-        let value = sDate.innerHTML
-        sDate.innerHTML = value.replace('-', '年').replace('-', '月') + '日'
+            let date = new Date();
+            let year = date.getFullYear();
+            let month = date.getMonth() + 1;
+            let day = date.getDate();
+            let japaneseDate = year + '年' + month + '月' + day + '日';
+
+            let sDates = document.querySelector('#sDates')
+            let value = sDates.innerHTML
+            sDates.innerHTML = japaneseDate;
 
         let delBtn = document.querySelector('.delBtn')
         let btn = document.querySelector('.btn')

@@ -18,7 +18,7 @@ const con = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "rootroot",
-  database: "calenderscheDb",
+  database: "calendersche_db",
   multipleStatements: true,
 });
 
@@ -26,7 +26,7 @@ const con = mysql.createConnection({
 app.use(express.static("assets"));
 
 app.get("/", (req, res) => {
-  const sql = "SELECT * from schedules;";
+  const sql = "SELECT * from schedule;";
   con.query(sql, function (err, result, fields) {
     if (err) throw err;
     res.render("index", {
@@ -42,7 +42,7 @@ app.get("/create/:date", (req, res) => {
 
 app.post("/", (req, res) => {
   console.log(req.params.id);
-  const sql = "INSERT INTO schedules (id, date, title, user, content) VALUES (?, ?, ?, ?, ?)"
+  const sql = "INSERT INTO schedule (id, date, title, user, content) VALUES (?, ?, ?, ?, ?)"
   con.query(
     sql,
     [
@@ -61,7 +61,7 @@ app.post("/", (req, res) => {
 
 // スケジュールの表示
 app.get("/show/:id", (req, res) => {
-  const sql = `SELECT * FROM schedules WHERE id = ${req.params.id}`;
+  const sql = `SELECT * FROM schedule WHERE id = ${req.params.id}`;
   con.query(sql, function (err, result, fields) {
     if (err) throw err;
     res.render("show", {
@@ -72,7 +72,7 @@ app.get("/show/:id", (req, res) => {
 
 // スケジュール編集
 app.get("/edit/:id", (req, res) => {
-  const sql = `SELECT * FROM schedules WHERE id = ${req.params.id}`;
+  const sql = `SELECT * FROM schedule WHERE id = ${req.params.id}`;
   con.query(sql, function (err, result, fields) {
     if (err) throw err;
     res.render("edit", {
@@ -83,17 +83,17 @@ app.get("/edit/:id", (req, res) => {
 
 app.post("/update/:id", (req, res) => {
   console.log(req.params.id);
-  const sql = "UPDATE schedules SET ? WHERE id = " + req.params.id;
+  const sql = "UPDATE schedule SET ? WHERE id = " + req.params.id;
   con.query(sql, req.body, function (err, result, fields) {
     if (err) throw err;
     console.log(result);
-    res.send("スケジュールを編集しました");
+    res.send("スケジュールを変更しました");
   });
 });
 
 // スケジュール削除
 app.get("/delete/:id", (req, res) => {
-  const sql = "DELETE FROM schedules WHERE id = ?";
+  const sql = "DELETE FROM schedule WHERE id = ?";
   con.query(sql, [req.params.id], function (err, result, fields) {
     if (err) throw err;
     console.log(result);
