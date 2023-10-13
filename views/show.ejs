@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= schedule[0].date %>
+    </title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body id="showPage">
+    <div class="container">
+        <h1>
+            <%= schedule[0].title %>
+        </h1>
+        <p id="sDate">
+            <%= schedule[0].date %>
+        </p>
+        <p><span>記入者：</span>
+            <%= schedule[0].username %>
+        </p>
+        <p><span>内容：</span>
+            <%= schedule[0].content %>
+        </p>
+        <p class="links">
+            <a href="../edit/<%= schedule[0].id %>">編集</a>
+            <a class="delBtn" href="../delete/<%= schedule[0].id %>">削除</a>
+        </p>
+    </div>
+    <button class="btn">閉じる</button>
+    <script>
+            let sDate = document.querySelector('#sDate')
+            let value = sDate.innerHTML
+            sDate.innerHTML = value.replace('-', '年').replace('-', '月') + '日'
+
+        let delBtn = document.querySelector('.delBtn')
+        let btn = document.querySelector('.btn')
+        delBtn.addEventListener('click', () => {
+            setTimeout(() => {
+                window.close()
+                window.opener.location.reload()
+            }, 100);
+        })
+        btn.addEventListener('click', () => {
+            setTimeout(() => {
+                window.close()
+                window.opener.location.reload()
+            }, 100);
+        })
+    </script>
+</body>
+
+</html>
