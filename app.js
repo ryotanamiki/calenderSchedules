@@ -18,7 +18,7 @@ const con = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "rootroot",
-  database: "calendersche_db",
+  database: "calender",
   multipleStatements: true,
 });
 
@@ -42,14 +42,14 @@ app.get("/create/:date", (req, res) => {
 
 app.post("/", (req, res) => {
   console.log(req.params.id);
-  const sql = "INSERT INTO schedule (id, date, title, user, content) VALUES (?, ?, ?, ?, ?)"
+  const sql = "INSERT INTO schedule (id, date, title, username, content) VALUES (?, ?, ?, ?, ?)"
   con.query(
     sql,
     [
       req.body.id,
       req.body.date,
       req.body.title,
-      req.body.user,
+      req.body.username,
       req.body.content
     ],
     function (err, result, fields) {
